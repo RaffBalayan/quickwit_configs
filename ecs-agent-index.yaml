@@ -1,0 +1,37 @@
+version: 0.8
+index_id: ecs-agent
+doc_mapping:
+  field_mappings:
+    # No Grok defined, assuming a generic structure or using metadata
+    - name: timestamp # Use Quickwit's ingest timestamp
+      type: datetime
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+    - name: message # Default field for unstructured logs
+      type: text
+      tokenizer: default
+    # Add known metadata fields if applicable
+    - name: container_id
+      type: text
+      tokenizer: raw
+    - name: container_name
+      type: text
+      tokenizer: raw
+    - name: hostname
+      type: text
+      tokenizer: default
+
+  timestamp_field: timestamp
+  index_field_presence: false # Allow missing fields
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily

@@ -1,0 +1,39 @@
+version: 0.8
+index_id: missing-nodes
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from MISSING_NODES Grok
+    - name: log_type # Not in Grok, but pattern starts with MISSING_NODES
+      type: text
+      tokenizer: raw
+      default_value: "MISSING_NODES"
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: count
+      type: u64
+      fast: true
+
+  timestamp_field: logtime
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily
+    

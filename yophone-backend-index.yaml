@@ -1,0 +1,55 @@
+version: 0.8
+index_id: yophone-backend
+doc_mapping:
+  field_mappings:
+    - name: log_time # Note: log_time, not logtime
+      type: datetime
+      input_formats:
+        - "iso8601"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from YOPHONE BACKEND Grok
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: command
+      type: text
+      tokenizer: raw
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: module
+      type: text
+      tokenizer: default
+    - name: filename
+      type: text
+      tokenizer: default
+    - name: func_name
+      type: text
+      tokenizer: default
+    - name: lineno
+      type: u64 # From INT
+      fast: true
+    - name: message
+      type: text
+      tokenizer: default
+    - name: log # From parsedJson
+      type: text
+      tokenizer: default
+
+  timestamp_field: log_time
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

@@ -1,0 +1,74 @@
+version: 0.8
+index_id: swarm-tournament
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from TOURNAMENT Grok
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: sid
+      type: text
+      tokenizer: raw
+    - name: client_ip
+      type: ip
+    - name: client_real_ip
+      type: ip
+    - name: user_id
+      type: u64 # Assuming numeric
+      fast: true
+    - name: site_id
+      type: u64 # Assuming numeric
+      fast: true
+    - name: action
+      type: text
+      tokenizer: raw
+    - name: method
+      type: text
+      tokenizer: raw
+    - name: response_delay
+      type: f64 # Assuming numeric, might need .number() mapping
+      fast: true
+    - name: status_code
+      type: u64 # Assuming numeric
+      fast: true
+    - name: command_name
+      type: text
+      tokenizer: raw
+    - name: request_url
+      type: text
+      tokenizer: default
+    - name: body
+      type: text
+      tokenizer: default
+    - name: notes
+      type: text
+      tokenizer: default
+    - name: log # From parsedJson
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

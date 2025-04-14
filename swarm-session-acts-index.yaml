@@ -1,0 +1,55 @@
+version: 0.8
+index_id: swarm_session_acts
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "rfc3339"
+        - "epoch_millis"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Combined fields from SESSION_REMOVE, DEAD-SESSION, INVALID-SESSION patterns
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: sid # From SESSION_REMOVE pattern
+      type: text
+      tokenizer: raw
+    - name: log_level # From DEAD-SESSION, INVALID-SESSION
+      type: text
+      tokenizer: raw
+    - name: session_id # From DEAD-SESSION, INVALID-SESSION (distinct from sid?)
+      type: text
+      tokenizer: raw
+    - name: error_message # From DEAD-SESSION
+      type: text
+      tokenizer: default
+    - name: crash_message # From DEAD-SESSION
+      type: text
+      tokenizer: default
+    - name: reason # From INVALID-SESSION
+      type: text
+      tokenizer: default
+
+    # Fields from initial mapping blocks (assuming they might co-exist)
+    - name: log
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime # Consistent across patterns
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

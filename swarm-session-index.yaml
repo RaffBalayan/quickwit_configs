@@ -1,0 +1,52 @@
+version: 0.8
+index_id: swarm_session
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields mapped from the SESSION Grok pattern
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: sid
+      type: text
+      tokenizer: raw
+    - name: site_id
+      type: u64 # Assuming numeric based on usage elsewhere
+      fast: true
+    - name: lang
+      type: text
+      tokenizer: raw
+    - name: origin
+      type: text
+      tokenizer: default
+    - name: release_date_time # Optional field from pattern
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "rfc3339"
+      output_format: rfc3339
+    - name: r_body
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime # Set based on Grok pattern field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

@@ -1,0 +1,58 @@
+version: 0.8
+index_id: swarm-fingerprint
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "rfc3339"
+        - "epoch_millis"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields mapped from the FINGERPRINT Grok pattern
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: sid
+      type: text
+      tokenizer: raw
+    - name: affected_sid
+      type: text
+      tokenizer: raw
+    - name: report_type
+      type: text
+      tokenizer: default
+    - name: report_time
+      type: text # Kept as text as format is unclear (NOTSPACE)
+      tokenizer: default
+    - name: command_name
+      type: text
+      tokenizer: raw
+    - name: trace
+      type: text
+      tokenizer: default
+    - name: additional
+      type: text
+      tokenizer: default
+
+    # Fields from initial mapping block (assuming they might co-exist)
+    - name: log
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime # Set based on Grok pattern field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

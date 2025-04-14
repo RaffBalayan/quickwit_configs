@@ -1,0 +1,15 @@
+version: 0.8
+source_id: redpanda-missing-nodes
+source_type: kafka
+#num_pipelines: 1
+params:
+  topic: missing-nodes
+  client_params:
+    bootstrap.servers: 34.91.247.196:19092
+    security.protocol: SASL_PLAINTEXT  # Use SASL without SSL
+    sasl.mechanism: SCRAM-SHA-256
+    sasl.username: superuser
+    sasl.password: secretpassword
+#    socket.timeout.ms: 20000  # Increase socket timeout to 10 seconds
+#    session.timeout.ms: 60000 # Increase session timeout to 30 seconds
+#    metadata.max.age.ms: 60000 # Refresh metadata every 30 seconds

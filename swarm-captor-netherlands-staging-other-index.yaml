@@ -1,0 +1,36 @@
+version: 0.8
+index_id: swarm-captor-netherlands-staging-other
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from SWARM-ALERT Grok
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: type
+      type: text
+      tokenizer: raw
+    - name: reason
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

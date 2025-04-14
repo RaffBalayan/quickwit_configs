@@ -1,0 +1,59 @@
+version: 0.8
+index_id: swarm_streams
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # From HTTPDATE definition
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields mapped from the STREAMS Grok pattern
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: sid
+      type: text
+      tokenizer: raw
+    - name: client_ip
+      type: ip
+    - name: client_real_ip
+      type: ip
+    - name: site_id
+      type: u64
+      fast: true
+    - name: action
+      type: text
+      tokenizer: raw
+    - name: video_id
+      type: u64 # From INT
+      fast: true
+    - name: provider_id
+      type: u64 # From INT
+      fast: true
+    - name: use_hls
+      type: text # Assuming 'true'/'false' or similar
+      tokenizer: raw
+    - name: r_body
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime # Set based on Grok pattern field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

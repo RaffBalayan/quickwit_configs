@@ -1,0 +1,48 @@
+version: 0.8
+index_id: swarm_webint
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        # From HTTPDATE definition: MONTHDAY/MONTH/YEAR:TIME INT
+        - "%d/%b/%Y:%H:%M:%S %z" # Assuming %z for timezone offset (INT)
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields mapped from the WEBINT Grok pattern
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: type
+      type: text
+      tokenizer: raw
+    - name: elapsed_time
+      # Mapping suggests it might be float, use text for flexibility
+      type: f64 # Changed to f64 based on .number() mapping
+      fast: true
+    - name: status_code
+      type: u64 # Assuming numeric status
+      fast: true
+    - name: note
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime # Set based on Grok pattern field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

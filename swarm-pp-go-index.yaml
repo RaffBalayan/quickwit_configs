@@ -1,0 +1,105 @@
+version: 0.8
+index_id: swarm-pp-go
+doc_mapping:
+  field_mappings:
+    # No clear top-level timestamp field in the Grok patterns for pp-go
+    # Add a placeholder if needed, or rely on Quickwit's default ingest time
+    - name: timestamp # Placeholder, assuming ingest time might be used
+      type: datetime
+      output_format: rfc3339
+      fast: true
+
+    # Combined fields from various PP Grok sub-patterns
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: remote_ip
+      type: ip
+    - name: buffer_size
+      type: u64
+      fast: true
+    - name: buffer_cap
+      type: u64
+      fast: true
+    - name: buffered_updates_length
+      type: u64
+      fast: true
+    - name: UpdatesSentCount
+      type: u64
+      fast: true
+    - name: BufferReconnectLimit
+      type: text # Could be numeric?
+      tokenizer: default
+    - name: MaxBufferedUpdatesLimit
+      type: text # Could be numeric?
+      tokenizer: default
+    - name: snapshot_length
+      type: u64
+      fast: true
+    - name: snapshot1_length
+      type: u64
+      fast: true
+    - name: snapshot2_length
+      type: u64
+      fast: true
+    - name: ReadyToServe
+      type: bool
+    - name: SnapshotUsingByCount
+      type: u64
+      fast: true
+    - name: UpdateChannelIsHealthy
+      type: bool
+    - name: UpdatePusherWatcherLen
+      type: u64
+      fast: true
+    - name: UpdatePusherWatcherCap
+      type: u64
+      fast: true
+    - name: SnapshotPusherWatcherLen
+      type: u64
+      fast: true
+    - name: SnapshotPusherWatcherCap
+      type: u64
+      fast: true
+    - name: UpdateSnapshotCounter
+      type: u64
+      fast: true
+    - name: ClientsCount
+      type: u64
+      fast: true
+    - name: snapshot_no
+      type: u64
+      fast: true
+    - name: IsSnapshotChannel
+      type: bool
+    - name: size_mb
+      type: f64
+      fast: true
+    - name: after_done
+      type: f64
+      fast: true
+    - name: fixed_time # Custom time format
+      type: text
+      tokenizer: default
+    - name: pusher
+      type: text
+      tokenizer: default
+
+    # Fields from initial parsedJson mapping
+    - name: msg # Contains the original grokked message
+      type: text
+      tokenizer: default
+
+  # timestamp_field: timestamp # Uncomment if using the placeholder field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

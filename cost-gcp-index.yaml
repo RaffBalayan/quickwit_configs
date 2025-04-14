@@ -1,0 +1,51 @@
+version: 0.8
+index_id: cost-gcp
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from GCP_COST_API Grok
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: supported
+      type: bool
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: region
+      type: text
+      tokenizer: default
+    - name: availability_zone
+      type: text
+      tokenizer: default
+    - name: machine_type
+      type: text
+      tokenizer: default
+    - name: cost
+      type: f64
+      fast: true
+    - name: note
+      type: text
+      tokenizer: default
+
+  timestamp_field: logtime
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

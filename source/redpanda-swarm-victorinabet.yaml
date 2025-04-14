@@ -1,0 +1,12 @@
+version: 0.8
+source_id: redpanda-swarm-victorinabet
+source_type: kafka
+#num_pipelines: 1
+params:
+  topic: swarm-victorinabet
+  client_params:
+    bootstrap.servers: 34.91.247.196:19092
+    security.protocol: SASL_PLAINTEXT  # Use SASL without SSL
+    sasl.mechanism: SCRAM-SHA-256
+    sasl.username: superuser
+    sasl.password: secretpassword 

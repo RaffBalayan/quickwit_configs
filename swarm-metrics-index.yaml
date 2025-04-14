@@ -1,0 +1,160 @@
+version: 0.8
+index_id: swarm-metrics # From output section
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Combined Fields from QUERY-WEIGHT, SUB, UPDATES, BOOT, DATABOOT, PUSHER, SUSPECTED, SUSPECTED-BLOCKING Grok patterns
+
+    # From QUERY-WEIGHT
+    - name: weight
+      type: f64
+      fast: true
+    - name: sid
+      type: text
+      tokenizer: raw
+    - name: qtx
+      type: text
+      tokenizer: default
+    - name: q_source
+      type: text
+      tokenizer: default
+    - name: what
+      type: text
+      tokenizer: default
+    - name: where
+      type: text
+      tokenizer: default
+    - name: hash
+      type: text
+      tokenizer: default
+    - name: origin
+      type: text
+      tokenizer: default
+    - name: do_bottom_to_top_filter
+      type: text
+      tokenizer: default
+    - name: site_id # Added via mapping from qtx JSON
+      type: u64
+      fast: true
+
+    # From SUB
+    - name: log_type # Also present in others
+      type: text
+      tokenizer: raw
+    - name: source
+      type: text
+      tokenizer: default
+    - name: get_cached
+      type: f64
+      fast: true
+    - name: get_total
+      type: f64
+      fast: true
+    - name: get_sub_cached
+      type: f64
+      fast: true
+    - name: get_sub_total
+      type: f64
+      fast: true
+    # live_games, prematch_games also in UPDATES
+    - name: live_games
+      type: u64
+      fast: true
+    - name: prematch_games
+      type: u64
+      fast: true
+
+    # From UPDATES
+    - name: total_updates
+      type: u64
+      fast: true
+    - name: effective_update
+      type: u64
+      fast: true
+    - name: total_subs
+      type: u64
+      fast: true
+    - name: session_count
+      type: u64
+      fast: true
+
+    # From BOOT
+    - name: component
+      type: text
+      tokenizer: raw
+    - name: uptime_at_start
+      type: f64
+      fast: true
+
+    # From DATABOOT
+    - name: drone_uptime # datetime, but source is HTTPDATE string
+      type: datetime
+      input_formats: ["%d/%b/%Y:%H:%M:%S %z"]
+      output_format: rfc3339
+    - name: translate_load_time
+      type: f64
+      fast: true
+    - name: translate_size
+      type: f64
+      fast: true
+    - name: translate_cpu_time
+      type: f64
+      fast: true
+    - name: sportbook_load_time
+      type: f64
+      fast: true
+    - name: sportbook_size
+      type: f64
+      fast: true
+    - name: sportbook_cpu_time
+      type: f64
+      fast: true
+
+    # From PUSHER
+    - name: pusher_host
+      type: text
+      tokenizer: default
+    - name: status
+      type: text
+      tokenizer: raw
+
+    # From SUSPECTED
+    - name: session_id # Distinct from sid
+      type: text
+      tokenizer: raw
+    - name: suspected_count
+      type: u64 # Assuming numeric count
+      fast: true
+    - name: call_count
+      type: u64 # Assuming numeric count
+      fast: true
+    - name: client_ip
+      type: ip
+
+    # From SUSPECTED-BLOCKING
+    # sid, client_ip already covered
+    - name: call_counter
+      type: u64 # Assuming numeric count
+      fast: true
+
+  timestamp_field: logtime # Consistent across patterns
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

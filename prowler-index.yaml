@@ -1,0 +1,48 @@
+version: 0.8
+index_id: prowler
+doc_mapping:
+  field_mappings:
+    - name: logtime
+      type: datetime
+      input_formats:
+        - "iso8601"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields from PROWLER Grok
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: log_level
+      type: text
+      tokenizer: raw
+    - name: scanned_env
+      type: text
+      tokenizer: default
+    - name: json # The raw JSON string from GREEDYDATA
+      type: text
+      tokenizer: default
+    - name: log # Parsed JSON object (from mapping step)
+      type: json
+      # Optional: Define subfields if structure is known and consistent
+      # field_mappings:
+      #   - name: sub_field_1
+      #     type: text
+      #   - name: sub_field_2
+      #     type: u64
+
+  timestamp_field: logtime
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 

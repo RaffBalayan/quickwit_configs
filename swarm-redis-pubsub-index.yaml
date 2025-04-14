@@ -1,0 +1,53 @@
+version: 0.8
+index_id: swarm-redis-pubsub
+doc_mapping:
+  field_mappings:
+    # log_time is used in the Grok pattern, mapped as timestamp
+    - name: log_time
+      type: datetime
+      # Assuming epoch_millis based on .number() mapping in connect.yml
+      input_formats:
+        - "epoch_millis"
+        - "rfc3339"
+      output_format: rfc3339
+      fast: true
+      fast_precision: seconds
+
+    # Fields mapped from the REDIS-PUBSUB Grok pattern
+    - name: log_type
+      type: text
+      tokenizer: raw
+    - name: channel
+      type: text
+      tokenizer: raw
+    - name: size
+      type: u64 # Based on .number() mapping
+      fast: true
+    - name: hash
+      type: text
+      tokenizer: raw
+    - name: part
+      type: u64 # Based on .number() mapping
+      fast: true
+    - name: message
+      type: text
+      tokenizer: default
+
+    # Fields from the initial mapping block (assuming they might co-exist)
+    - name: log
+      type: text
+      tokenizer: default
+
+  timestamp_field: log_time # Set based on Grok pattern field
+  index_field_presence: true
+
+indexing_settings:
+  commit_timeout_secs: 10
+  merge_policy:
+    type: stable_log
+    merge_factor: 10
+    maturation_period: 6d
+
+retention:
+  period: 7 days
+  schedule: daily 
