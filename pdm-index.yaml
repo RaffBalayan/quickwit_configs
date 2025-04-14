@@ -6,7 +6,6 @@ doc_mapping:
       type: datetime
       input_formats:
         - "%d/%b/%Y:%H:%M:%S %z"
-        - "rfc3339"
       output_format: rfc3339
       fast: true
       fast_precision: seconds
@@ -15,7 +14,6 @@ doc_mapping:
     - name: log_type # Not in Grok, default from pattern start
       type: text
       tokenizer: raw
-      default_value: "PDM"
     - name: pusher_data_process_time_shift
       type: f64
       fast: true

@@ -2,12 +2,14 @@ version: 0.8
 index_id: yophone-other
 doc_mapping:
   field_mappings:
-    # No Grok defined, check might be on log_type == YOPHONE
-    - name: timestamp # Use Quickwit's ingest timestamp or inherited
+    - name: logtime
       type: datetime
+      input_formats:
+        - "%d/%b/%Y:%H:%M:%S %z" # Assuming %z for timezone offset (INT)
       output_format: rfc3339
       fast: true
       fast_precision: seconds
+
     - name: log_type
       type: text
       tokenizer: raw
@@ -25,7 +27,7 @@ doc_mapping:
       type: text
       tokenizer: default
 
-  # timestamp_field: timestamp # Or inherit log_time if possible
+  timestamp_field: timestamp
   index_field_presence: false # Allow missing fields
 
 indexing_settings:
