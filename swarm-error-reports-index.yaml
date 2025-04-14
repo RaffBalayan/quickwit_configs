@@ -6,8 +6,6 @@ doc_mapping:
       type: datetime
       input_formats:
         - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
-        - "rfc3339"
-        - "epoch_millis"
       output_format: rfc3339
       fast: true
       fast_precision: seconds
