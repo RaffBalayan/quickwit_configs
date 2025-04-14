@@ -5,9 +5,8 @@ doc_mapping:
     - name: logtime
       type: datetime
       input_formats:
-        - "%d/%b/%Y:%H:%M:%S %z" # Common HTTPDATE
+        - "%d/%b/%Y:%H:%M:%S %z"
         - "rfc3339"
-        - "epoch_millis"
       output_format: rfc3339
       fast: true
       fast_precision: seconds

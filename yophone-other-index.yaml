@@ -27,7 +27,6 @@ doc_mapping:
       type: text
       tokenizer: default
 
-  timestamp_field: timestamp
   index_field_presence: false # Allow missing fields
 
 indexing_settings:
