@@ -5,7 +5,7 @@ source_type: kafka
 params:
   topic: swarm-admin-other
   client_params:
-    bootstrap.servers: 34.91.247.196:19092
+    bootstrap.servers: 172.27.48.155:19092 , 172.27.48.155:29092 , 172.27.48.155:39092
     security.protocol: SASL_PLAINTEXT  # Use SASL without SSL
     sasl.mechanism: SCRAM-SHA-256
     sasl.username: superuser
